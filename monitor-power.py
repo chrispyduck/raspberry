@@ -2,12 +2,16 @@
 
 # Test interrupts.
 
-import select, time, sys
+import select, time, sys, subprocess
 
 gpio_base = '/sys/class/gpio/'
 gpio_pin_prefix = 'gpio'
 pin_vbatt = '13'
 pin_vacc = '19'
+actions = {
+    'vAcc': lambda value: subprocess.call('./start.sh') if value == '1' else subprocess.call('./stop.sh'),
+    'vBatt': lambda value: None
+}
 
 def write_once(path, value):
     f = open(path, 'w')
@@ -63,9 +67,16 @@ class PowerState:
             if len(event) == 0:
                 continue
             self.update()
-            if (self.vBatt == self.vBattLast) and (self.vAcc == self.vAccLast):
+            changes = []
+            if (self.vBatt != self.vBattLast):
+                changes.append(['vBatt', self.vBatt])
+                self.vBattLast = self.vBatt
+            if (self.vAcc != self.vAccLast):
+                changes.append(['vAcc', self.vAcc])
+                self.vAccLast = self.vAcc
+            if len(changes) == 0:
                 continue
-            return self
+            return changes
     def poll(self):
         return self.__poll.poll(6000)
 
@@ -75,7 +86,10 @@ with PowerState() as state:
     state.print()
 
     while 1:
-        state.wait_for_event()
+        changes = state.wait_for_event()
+        for change in changes:
+            sys.stdout.write('change: {}\n'.format(change))
+            actions[change[0]](change[1])
         state.print()
 
 
