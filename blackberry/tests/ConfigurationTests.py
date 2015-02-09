@@ -22,11 +22,11 @@ class ConfigurationTests(unittest.TestCase):
         "usb_power": "/sys/devices/platform/bcm2708_usb/buspower"
     },
     "bluetooth": {
-        "mac": "2C:44:01:CF:73:FE"
+        "tetheringDevices": ["2C:44:01:CF:73:FE"]
     },
     "data": {
         "remote_db": {
-            "db": "mongodb://raspberry:2099as09j1309ja0f9j20@ds041561.mongolab.com:41561/blackbox",
+            "db": "mongodb://user:pass@sdkjf:41561/blackbox",
             "collection": "remote"
         },
         "local_db": {

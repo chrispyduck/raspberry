@@ -4,9 +4,9 @@ Created on Feb 4, 2015
 @author: CCarlson
 '''
 import unittest
-from blackberry.data import *
 from blackberry.data.DataCollector import DataCollector
 from blackberry.data.DataSeries import DataSeries
+from blackberry.tests.DataCollectorStub import DataCollectorStub
 
 class DataCollectorTests(unittest.TestCase):
 
@@ -26,11 +26,11 @@ class DataCollectorTests(unittest.TestCase):
         
     def test_expectedBehavior(self):
         collector = DataCollector()
-        collector.registerDataProvider(self.fn_expectedBehavior)
+        collector.registerDataProvider(DataCollectorStub(self.fn_expectedBehavior))
         result = collector.queryProviders()
         self.assertEqual(len(result), 1)
         
-        collector.registerDataProvider(self.fn_expectedBehavior2)
+        collector.registerDataProvider(DataCollectorStub(self.fn_expectedBehavior2))
         result = collector.queryProviders()
         self.assertEqual(len(result), 2)
         
@@ -40,12 +40,12 @@ class DataCollectorTests(unittest.TestCase):
         
     def test_emptyResultSet(self):
         collector = DataCollector()
-        collector.registerDataProvider(self.fn_emptyResultSet)
+        collector.registerDataProvider(DataCollectorStub(self.fn_emptyResultSet))
         result = collector.queryProviders()
         self.assertEqual(len(result), 0)
         self.assertEqual(len(collector._providers), 1)
         
-        collector.registerDataProvider(self.fn_expectedBehavior)
+        collector.registerDataProvider(DataCollectorStub(self.fn_expectedBehavior))
         result = collector.queryProviders()
         self.assertEqual(len(result), 1)
         self.assertEqual(len(collector._providers), 2)
@@ -55,12 +55,12 @@ class DataCollectorTests(unittest.TestCase):
     
     def test_nullResultSet(self):
         collector = DataCollector()
-        collector.registerDataProvider(self.fn_nullResultSet)
+        collector.registerDataProvider(DataCollectorStub(self.fn_nullResultSet))
         result = collector.queryProviders()
         self.assertEqual(len(result), 0)
         self.assertEqual(len(collector._providers), 1)
         
-        collector.registerDataProvider(self.fn_expectedBehavior)
+        collector.registerDataProvider(DataCollectorStub(self.fn_expectedBehavior))
         result = collector.queryProviders()
         self.assertEqual(len(result), 1)
         self.assertEqual(len(collector._providers), 2)
