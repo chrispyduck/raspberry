@@ -1,4 +1,5 @@
 from blackberry.data.DataPoint import DataPoint
+
 class DataSeries(object):
     """describes a set of data points from a particular data source"""
     def __init__(self, source):

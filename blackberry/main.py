@@ -9,6 +9,7 @@ if __name__ == "__main__":
     logging.info('Starting raspberry!')
     
     bluetooth = Bluetooth()
+    bluetooth.connected += ...
     
     power = PowerMonitor()
     power.startup += bluetooth.start
