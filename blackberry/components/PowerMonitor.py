@@ -1,7 +1,7 @@
 from __future__ import print_function
 import logging
 import time
-from blackberry.shared import EventHook
+from blackberry.shared.EventHook import EventHook
 from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.shared.GpioInputMonitor import GpioInputMonitor
 

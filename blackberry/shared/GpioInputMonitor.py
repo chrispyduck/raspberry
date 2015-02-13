@@ -1,14 +1,23 @@
-import RPi.GPIO as GPIO
-import logging
+import os, logging
+
+if os.uname()[4][:3] == 'arm':
+	rpi = True
+	import RPi.GPIO as GPIO
+else:
+	rpi = False
+	logging.warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
 
 class GpioInputMonitor(object):
 	def __init__(self, name, channel, callback):
 		self._channel = channel
 		self._callback = callback
 		self._name = name
-		GPIO.setup(self._channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-		self._last_value = GPIO.input(self._channel)
-		GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=250)
+		if rpi:
+			GPIO.setup(self._channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+			self._last_value = GPIO.input(self._channel)
+			GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=250)
+		else:
+			self._last_value = False
 		logging.debug('Registering GPIO pin %d as input for "%s"; value=%r', self._channel, self._name, self._last_value)
 	
 	@property
@@ -24,14 +33,21 @@ class GpioInputMonitor(object):
 	@property
 	def value(self):
 		"""Gets the current value of the input pin"""
-		return GPIO.input(self._channel)
+		if rpi:
+			return GPIO.input(self._channel)
+		else:
+			return False
 		
 	
 	def _change(self, channel):
 		if channel != self._channel:
 			pass
-		
-		value = GPIO.input(self._channel)
+
+		if rpi:		
+			value = GPIO.input(self._channel)
+		else:
+			value = False
+
 		if (value == self._last_value):
 			pass
 		
