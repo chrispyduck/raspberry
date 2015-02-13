@@ -1,8 +1,6 @@
-from blackberry.data import data
 import blackberry.components
 import blackberry.data  
-import os, sys
-import logging
+import os, sys, logging
 
 class Blackberry(object):
     def __init__(self):
@@ -21,10 +19,10 @@ class Blackberry(object):
         self.bluetooth.connected += self.onNetConnected
         self.bluetooth.disconnected += self.onNetDisconnected
         
-        
-        pass
+        self.dataCollector.start()
     
     def powerOff(self):
+        self.dataCollector.stop()
         self.dataCollector = None
         self.obd = None
         self.bluetooth = None
@@ -39,8 +37,8 @@ class Blackberry(object):
         pass
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='raspberry.log', level=logging.DEBUG, format='%(asctime)s %(name)s %(level)s: %(message)s')
-    logging.info('Starting raspberry!')
+    logging.basicConfig(filename='raspberry.log', level=logging.DEBUG, format='%(asctime)s %(module)s.%(funcName)s %(levelname)s: %(message)s')
+    logging.info('Starting blackberry!')
     
     instance = Blackberry()
         

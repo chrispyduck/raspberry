@@ -5,4 +5,4 @@ class _ConfigData(_ConfigType):
     def __init__(self):
         self.remote_db = _ConfigDataType()
         self.local_db = _ConfigDataType()
-        
+        self.capture_interval = 0.3

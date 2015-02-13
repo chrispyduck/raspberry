@@ -2,7 +2,7 @@ from blackberry.components.DataCollectorComponent import DataCollectorComponent
 from blackberry.data.DataSeries import DataSeries
 import obd
 
-class Obd(object, DataCollectorComponent):
+class Obd(DataCollectorComponent):
     def __init__(self):
         self._connection = obd.OBD()
             
