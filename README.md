@@ -1,15 +1,20 @@
-#Raspberry Pi black box and media center
+#Raspberry Pi-based vehicle black box
 
-End goals:
-* Power to the Pi is delivered via GPIO 5V/GND pins
-* Pi enables/disables hardware based on status of vehicle's accessory power - if the ignition is on, the device is fully active
-* Battery backup via separate lead acid battery and/or solar panel(s)
-* Monitor car activity via ELM327 USB interface
-* Auto pair with bluetooth phone
-  * Play audio from phone
-  * Use phone's internet connection to upload data
-* Provide connection for USB TTL cable for debugging
+##Immediate goals
+* Deactivate peripherals when vehicle is off
+* Monitor vehicle status using OBDII port via ELM327 interface and store data in local MongoDB instance
+* Utilize Bluetooth tethering to gain internet access when vehicle is on (phone provides access)
+* Periodically upload locally recoded data to remote MongoDB instance (using MongoLab)
 
-Wish list:
-* Video capture and storage of last n seconds
-* Visual feedback via LEDs/buttons or touch screen
+##Components
+* Python-based controller/recording software; see [Blackberry](blackberry)
+* Simple hardware interface for GPIO circuit; done, but not documented yet
+* C# service to retrieve data from remote MongoDB instance and load into SQL database; not started
+
+##Future goals
+* Dashboard camera, possibly using a modified 808 keychain camera, remote controlled by the Pi or attached circuitry
+* Hack my car and make it do fun things (because, really, why not?)
+* [Maybe] add one or more laser rangefinders to gauge distance between my vehicle and vehicles around me
+* Backup solar power and battery for when vehicle is off
+* Visual feedback of vehicle performance
+* Make it a media center, too
