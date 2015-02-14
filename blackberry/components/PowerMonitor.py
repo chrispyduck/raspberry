@@ -1,5 +1,5 @@
 from __future__ import print_function
-import logging, time, os.path
+import logging, time, os.path, signal
 from blackberry.shared.EventHook import EventHook
 from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.shared.GpioInputMonitor import GpioInputMonitor
@@ -12,9 +12,21 @@ class PowerMonitor(object):
         self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self._vBatt_change)
         self.startup = EventHook()
         self.shutdown = EventHook()
-        self._logger.debug('PowerMonitor(): initialization complete')
         self._vBatt_change(self.vBatt.value)
-        self._vAcc_change(self.vAcc.value)        
+        self._vAcc_change(self.vAcc.value)
+        
+        signal.signal(signal.SIGUSR1, self.OnSignal)
+        signal.signal(signal.SIGUSR2, self.OnSignal)
+        
+        self._logger.debug('PowerMonitor(): initialization complete')        
+        
+    def OnSignal(self, sig, frame):
+        if sig == signal.SIGUSR1:
+            self._logger.warn('Manually activating due to SIGUSR1')
+            self._activate()
+        elif sig == signal.SIGUSR2:
+            self._logger.warn('Manually deactivating due to SIGUSR2')
+            self._deactivate()
         
     def _vAcc_change(self, value):
         self._logger.info('vAcc power %s', 'on' if value else 'off')

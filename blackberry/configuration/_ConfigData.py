@@ -7,3 +7,4 @@ class _ConfigData(_ConfigType):
         self.remote_db = _ConfigDataType()
         self.local_db = _ConfigDataType()
         self.capture_interval = 0.3
+        self.enabled_collectors = ['TestDataCollector']

@@ -12,13 +12,16 @@
 		]
 	},
 	"data": {
+		"enabled_collectors": [
+			"blackberry.components.TestDataCollector.TestDataCollector"
+		],
 		"remote_db": {
 			"db": "mongodb://user:pass@hostname:port/db",
 			"collection": "raspberry"
 		},
 		"local_db": {
-			"db": "mongodb://localhost.../blackbox",
-			"collection": "raspberry"
+			"db": "mongodb://blackberry:blackberry@localhost/blackberry",
+			"collection": "data"
 		}
 	}
 }

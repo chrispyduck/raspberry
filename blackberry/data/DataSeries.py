@@ -6,7 +6,7 @@ class DataSeries(object):
         self.points = []
         self.source = source
     
-    def addPoint(self, counter, value):
+    def add(self, counter, value):
         self.points.append(DataPoint(counter, value))
         
     def serialize(self):

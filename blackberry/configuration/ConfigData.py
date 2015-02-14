@@ -16,8 +16,8 @@ class ConfigData(object):
         self._parser = argparse.ArgumentParser(description='Raspberry Pi-based Vehicle Black Box')
         self._parser.add_argument('-d', '--debug', help='enable debug mode and do not fork', action='store_true')
         self._parser.add_argument('-c', '--config', help='path to configuration file', default='config.json')
-        self._parser.add_argument('-l', '--log', help='path to log file', default='raspberry.log')
-        self._parser.add_argument('-p', '--pid', help='path to pid file', default='raspberry.pid')
+        self._parser.add_argument('-l', '--log', help='path to log file', default='/tmp/raspberry.log')
+        self._parser.add_argument('-p', '--pid', help='path to pid file', default='/tmp/raspberry.pid')
         
     def reload(self):
         self._logger.info('Reloading configuration from %s', self.args.config)

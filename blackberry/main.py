@@ -1,4 +1,4 @@
-import sys, logging
+import sys, logging, traceback, string
 
 if __name__ != "__main__":
     print('What are you doing?')
@@ -24,6 +24,15 @@ logger.setLevel(logging.DEBUG)
 logger.info('Starting blackberry:')
 logger.info(CurrentConfig.args)
 
+def exceptionHandler(exctype, value, tb):
+    logger.fatal(string.join(traceback.format_exception(exctype, value, tb)))
+    sys.__excepthook__(exctype, value, tb)
+sys.excepthook = exceptionHandler
+
 from blackberry.Controller import Controller
 instance = Controller()
-instance.StartWithArgs()
+
+if CurrentConfig.args.debug:
+    instance.run()
+else:
+    instance.start()

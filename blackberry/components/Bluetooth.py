@@ -2,7 +2,7 @@ from subprocess import call
 import logging
 import dbus  
 import dbus.mainloop.glib
-from blackberry.shared import EventHook
+from blackberry.shared.EventHook import EventHook
 from blackberry.configuration.ConfigData import CurrentConfig
 
 class Bluetooth(object):
