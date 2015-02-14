@@ -7,7 +7,8 @@ from blackberry.configuration.ConfigData import CurrentConfig
 
 class Bluetooth(object):
     def __init__(self):
-        logging.debug('bluetooth_manager(): initializing')
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger.debug('bluetooth_manager(): initializing')
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
         self._sysbus = dbus.SystemBus()
         self._devices = {}
@@ -41,7 +42,7 @@ class Bluetooth(object):
             adapter = dbus.Interface(self._sysbus.get_object('org.bluez', path), 'org.bluez.Adapter1')
             adapter.StartDiscovery()
         
-        logging.debug('bluetooth_manager(): initialization complete')
+        self._logger.debug('bluetooth_manager(): initialization complete')
         
     def refreshData(self):
         bluez_root = self._sysbus.get_object('org.bluez', '/')
@@ -51,14 +52,14 @@ class Bluetooth(object):
             interfaces = objects[path]
             self._interfacesAdded(path, interfaces)
             if 'org.bluez.Adapter1' in interfaces:
-                logging.info('Found adapter: %s', path)
+                self._logger.info('Found adapter: %s', path)
                 self._adapters[path] = interfaces
             elif 'org.bluez.Device1' in interfaces:
-                logging.info('Found device: %s', path)
+                self._logger.info('Found device: %s', path)
                 self._devices[path] = interfaces
         
     def _interfacesAdded(self, path, interfaces):
-        logging.debug("Interfaces added at %s: %r", path, interfaces)
+        self._logger.debug("Interfaces added at %s: %r", path, interfaces)
 
         if 'org.bluez.Device1' in interfaces:
             collection = self._devices
@@ -85,12 +86,12 @@ class Bluetooth(object):
         
     def _interfacesRemoved(self, path, interfaces):
         if 'org.bluez.Device1' in interfaces:
-            logging.warn('Device %s removed', path)
+            self._logger.warn('Device %s removed', path)
             self._devices.pop(path)
         elif 'org.bluez.Adapter1' in interfaces:
-            logging.warn('Adapter %s removed', path)
+            self._logger.warn('Adapter %s removed', path)
             self._adapters.pop(path)
-        logging.warn("Interface removed at %s: %r", path, interfaces)
+        self._logger.warn("Interface removed at %s: %r", path, interfaces)
         
     def _propertiesChanged(self, interface, changed, invalidated, path):
         if interface != "org.bluez.Device1":
@@ -109,17 +110,17 @@ class Bluetooth(object):
         self._logDevice(address, self.devices[path])
         
     def _adapterPropertyChanged(self, name, value):
-        logging.debug("Adapter property '%s' changed to '%s'", name, value)
+        self._logger.debug("Adapter property '%s' changed to '%s'", name, value)
     
     def _logDevice(self, address, properties):
         #if 'Logged' in properties:
         #    return
-        logging.debug("Device " + address + " :")
+        self._logger.debug("Device " + address + " :")
 
         for key in properties.keys():
             value = properties[key]
             if (key == "Class"):
-                logging.debug("    %s = 0x%06x" % (key, value))
+                self._logger.debug("    %s = 0x%06x" % (key, value))
             else:
                 logging.debug("    %s = %s" % (key, value))
     
@@ -129,14 +130,14 @@ class Bluetooth(object):
         connected = []
         tetheringDevice = None
         for path in self._devices:
-            logging.debug('Attempting to connect to device %s', path)
+            self._logger.debug('Attempting to connect to device %s', path)
             try:
                 dev = self._sysbus.get_object('org.bluez', path)
                 devif = dbus.Interface(dev, 'org.bluez.Device1')
                 devif.Connect()
                 connected.append(path)
             except dbus.exceptions.DBusException as dbe:
-                logging.warn('Unable to connect to device %s: %s', path, dbe)
+                self._logger.warn('Unable to connect to device %s: %s', path, dbe)
         
         if activateTethering:
             tetheringDevice = self.startTethering()
@@ -149,12 +150,12 @@ class Bluetooth(object):
             if self._devices[path]['org.bluez.Device1']['Connected'] == False:
                 continue
             
-            logging.info('Attempting to disconnect from device %s', path)
+            self._logger.info('Attempting to disconnect from device %s', path)
             try:
                 obj = self._sysbus.get_object('org.bluez', path)
                 dbus.Interface(obj, 'org.bluez.Device1').Disconnect()
             except dbus.exceptions.DBusException as dbe:
-                logging.warn('Unable to disconnect from device %s: %s', path, dbe)
+                self._logger.warn('Unable to disconnect from device %s: %s', path, dbe)
         
         self.refreshData()
         self.disconnected.fire()
@@ -174,7 +175,7 @@ class Bluetooth(object):
     
     def startTethering(self):
         "Attempts to establish tethering with the first available preferred device"
-        logging.debug('Starting bluetooth tethering')
+        self._logger.debug('Starting bluetooth tethering')
         interface = None
         for device in CurrentConfig.bluetooth.tetheringDevices:
             try:
@@ -183,7 +184,7 @@ class Bluetooth(object):
                      device.replace(':', '_')
                      )
                 if self._devices[devicePath]['org.bluez.Device1']['Connected'] == False:
-                    logging.info('Preferred tethering device %s is not connected. Skipping.', device)
+                    self._logger.info('Preferred tethering device %s is not connected. Skipping.', device)
                     continue
                 
                 dev = self._sysbus.get_object('org.bluez', devicePath)
@@ -191,21 +192,21 @@ class Bluetooth(object):
                 interface = netif.Connect('nap')
                 break
             except dbus.exceptions.DBusException as dbe:
-                logging.warn('Unable to begin tethering with %s: %s', device, dbe)
+                self._logger.warn('Unable to begin tethering with %s: %s', device, dbe)
                 raise
             
         if interface:
-            logging.info('Starting dhcpcd on %s', netif)
+            self._logger.info('Starting dhcpcd on %s', netif)
             ret = call(['dhcpcd', '-t 10 {0}'.format(netif)])
             if ret == 1:
-                logging.warn('Unable to obtain IP address from bluetooth adapter')
+                self._logger.warn('Unable to obtain IP address from bluetooth adapter')
                 self.internet_connected = False
                 netif.Disconnect()
             else:
-                logging.info('Internet connection established')
+                self._logger.info('Internet connection established')
                 self.internet_connected = True
         else:
-            logging.warn('Unable to establish bluetooth tethering with any preferred devices')
+            self._logger.warn('Unable to establish bluetooth tethering with any preferred devices')
                 
         self.refreshData()        
 #dbus-send --system --type=method_call --dest=org.bluez /org/bluez/hci0/dev_2C_44_01_CF_73_FE org.bluez.Network1.Connect string:'nap'

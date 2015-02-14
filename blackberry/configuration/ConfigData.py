@@ -6,7 +6,8 @@ import logging, json, argparse
 
 class ConfigData(object):
 
-    def __init__(self, **entries): 
+    def __init__(self): 
+        self._logger = logging.getLogger(self.__class__.__name__)
         self.gpio = _ConfigGpio()
         self.paths = _ConfigPaths()
         self.bluetooth = _ConfigBluetooth()
@@ -18,13 +19,17 @@ class ConfigData(object):
         self._parser.add_argument('-l', '--log', help='path to log file', default='raspberry.log')
         self._parser.add_argument('-p', '--pid', help='path to pid file', default='raspberry.pid')
         
+    def reload(self):
+        self._logger.info('Reloading configuration from %s', self.args.config)
+        self.init(self.args.config)
+        
     def parseArgs(self):
         self.args = self._parser.parse_args()
         self.init(self.args.config)
         
     def init(self, configFile = "config.json"):
         # load raw data from file
-        logging.info('Loading configuration from file: %s', configFile)
+        self._logger.info('Loading configuration from file: %s', configFile)
         with open(configFile) as fd:
             rawdata = json.load(fd)
         self._init(rawdata)
@@ -32,9 +37,9 @@ class ConfigData(object):
     def _init(self, rawdata):
         for key in rawdata:
             if key in self.__dict__:
-                logging.debug('Loading config data for: %s', key)
+                self._logger.debug('Loading config data for: %s', key)
                 self.__dict__[key].load(rawdata[key])
             else:
-                logging.warning('Found unknown config entry: %s', key)
+                self._logger.warning('Found unknown config entry: %s', key)
 
 CurrentConfig = ConfigData()

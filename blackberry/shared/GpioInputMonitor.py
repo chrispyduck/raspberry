@@ -5,10 +5,11 @@ if os.uname()[4][:3] == 'arm':
 	import RPi.GPIO as GPIO
 else:
 	rpi = False
-	logging.warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
+	logging.getLogger('GPIO').warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
 
 class GpioInputMonitor(object):
 	def __init__(self, name, channel, callback):
+		self._logger = logging.getLogger(self.__class__.__name__)
 		self._channel = channel
 		self._callback = callback
 		self._name = name
@@ -18,7 +19,7 @@ class GpioInputMonitor(object):
 			GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=250)
 		else:
 			self._last_value = False
-		logging.debug('Registering GPIO pin %d as input for "%s"; value=%r', self._channel, self._name, self._last_value)
+		self._logger.debug('Registering GPIO pin %d as input for "%s"; value=%r', self._channel, self._name, self._last_value)
 	
 	@property
 	def name(self):
@@ -51,6 +52,6 @@ class GpioInputMonitor(object):
 		if (value == self._last_value):
 			pass
 		
-		logging.debug('Detected GPIO event for "%s"; value=%r', self.name, value)
+		self._logger.debug('Detected GPIO event for "%s"; value=%r', self.name, value)
 		self._last_value = value
 		self._callback(value)

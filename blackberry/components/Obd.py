@@ -1,10 +1,11 @@
 from blackberry.components.DataCollectorComponent import DataCollectorComponent
 from blackberry.data.DataSeries import DataSeries
-import obd
+import obd, logging
 
 class Obd(DataCollectorComponent):
     def __init__(self):
         self._connection = obd.OBD()
+        self._logger = logging.getLogger(self.__class__.__name__)
             
     def GetData(self):
         series = DataSeries('obd')

@@ -6,5 +6,6 @@ from blackberry.configuration._ConfigType import _ConfigType
 '''
 class _ConfigGpio(_ConfigType):
     def __init__(self):
+        super(_ConfigType, self).__init__()
         self.vAcc = 19
         self.vBatt = 13
