@@ -1,27 +1,30 @@
 {
-	"gpio": {
-		"vAcc": 19,
-		"vBatt": 13
-	},
-	"paths": {
-		"usb_power": "/sys/devices/platform/bcm2708_usb/buspower"
-	},
-	"bluetooth": {
-		"tetheringDevices": [
-			"2C:44:01:CF:73:FE"
-		]
-	},
-	"data": {
-		"enabled_collectors": [
-			"blackberry.components.TestDataCollector.TestDataCollector"
-		],
-		"remote_db": {
-			"db": "mongodb://user:pass@hostname:port/db",
-			"collection": "raspberry"
-		},
-		"local_db": {
-			"db": "mongodb://blackberry:blackberry@localhost/blackberry",
-			"collection": "data"
-		}
-	}
+  "bluetooth": {
+    "autodiscover": true,
+    "pin": 1123,
+    "tetheringDevices": [
+      "2C:44:01:CF:73:FE"
+    ]
+  },
+  "data": {
+    "capture_interval": 0.3,
+    "enabled_collectors": [
+      "blackberry.components.TestDataCollector.TestDataCollector"
+    ],
+    "local_db": {
+      "collection": "data",
+      "db": "mongodb://blackberry:blackberry@localhost/blackberry"
+    },
+    "remote_db": {
+      "collection": "raspberry",
+      "db": "mongodb://user:pass@hostname:port/db"
+    }
+  },
+  "gpio": {
+    "vAcc": 19,
+    "vBatt": 13
+  },
+  "paths": {
+    "usb_power": "/sys/devices/platform/bcm2708_usb/buspower"
+  }
 }

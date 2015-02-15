@@ -21,6 +21,10 @@ if CurrentConfig.args.debug:
 logger = logging.getLogger('')
 logger.setLevel(logging.DEBUG)
 
+if CurrentConfig.args.writeconfig:
+    CurrentConfig.save(CurrentConfig.args.writeconfig)
+    sys.exit(0)
+
 logger.info('Starting blackberry:')
 logger.info(CurrentConfig.args)
 

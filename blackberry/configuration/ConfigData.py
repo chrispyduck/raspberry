@@ -1,8 +1,10 @@
+from __future__ import print_function
 from blackberry.configuration._ConfigPaths import _ConfigPaths
 from blackberry.configuration._ConfigGpio import _ConfigGpio
 from blackberry.configuration._ConfigBluetooth import _ConfigBluetooth
 from blackberry.configuration._ConfigData import _ConfigData
 import logging, json, argparse
+import blackberry.shared
 
 class ConfigData(object):
 
@@ -18,6 +20,7 @@ class ConfigData(object):
         self._parser.add_argument('-c', '--config', help='path to configuration file', default='config.json')
         self._parser.add_argument('-l', '--log', help='path to log file', default='/tmp/raspberry.log')
         self._parser.add_argument('-p', '--pid', help='path to pid file', default='/tmp/raspberry.pid')
+        self._parser.add_argument('-wc', '--writeconfig', help=argparse.SUPPRESS)
         
     def reload(self):
         self._logger.info('Reloading configuration from %s', self.args.config)
@@ -41,5 +44,12 @@ class ConfigData(object):
                 self.__dict__[key].load(rawdata[key])
             else:
                 self._logger.warning('Found unknown config entry: %s', key)
+                
+    def save(self, configFile = "config.json"):
+        data = blackberry.shared.todict(self)
+        datastr = json.dumps(data, sort_keys=True, indent=2, separators=(',', ': '))
+        with open(configFile, 'w') as cf:
+            print(datastr, file=cf)
+        self._logger.info('Saved configuration to file %s', configFile)
 
 CurrentConfig = ConfigData()
