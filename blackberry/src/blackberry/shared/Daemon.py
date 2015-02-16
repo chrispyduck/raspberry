@@ -1,4 +1,4 @@
-import sys, os, time, atexit
+import sys, os, time, atexit, psutil
 from signal import SIGTERM 
 
 class Daemon(object):
@@ -48,7 +48,7 @@ class Daemon(object):
         sys.stderr.flush()
         si = open(self.stdin, 'r')
         so = open(self.stdout, 'a+')
-        se = open(self.stderr, 'a+', 0)
+        se = open(self.stderr, 'a+') #,0
         os.dup2(si.fileno(), sys.stdin.fileno())
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
@@ -72,7 +72,7 @@ class Daemon(object):
         except IOError:
             pid = None
     
-        if pid:
+        if pid and psutil.pid_exists(pid):
             message = "pidfile %s already exist. Daemon already running?\n"
             sys.stderr.write(message % self.pidfile)
             sys.exit(1)
