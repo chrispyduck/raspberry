@@ -6,7 +6,7 @@ from blackberry.components.PowerMonitor import PowerMonitor
 from blackberry.components.Obd import Obd
 from blackberry.data.DataCollector import DataCollector
 from blackberry.components.Bluetooth import Bluetooth
-from multiprocessing.synchronize import Event
+import multiprocessing
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \
     for n in dir(signal) if n.startswith('SIG') and '_' not in n )
@@ -16,7 +16,7 @@ class Controller(Daemon):
         super(Controller, self).__init__(CurrentConfig.args.pid)
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.info('Starting daemon controller')
-        self._lock = Event()
+        self._lock = multiprocessing.Event()
         self._powerStatus = False
         pass        
         

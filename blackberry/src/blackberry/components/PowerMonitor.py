@@ -38,7 +38,8 @@ class PowerMonitor(object):
     def _activate(self):
         if os.path.isfile(CurrentConfig.paths.usb_power):
             self._logger.info('Activating USB hub power')
-            print('0x1', file=CurrentConfig.paths.usb_power)
+            with open(CurrentConfig.paths.usb_power, 'w') as powerfile:
+                print('0x1', file=powerfile)
         time.sleep(5)
         self.startup.fire()
     
@@ -47,5 +48,6 @@ class PowerMonitor(object):
         time.sleep(5)
         if os.path.isfile(CurrentConfig.paths.usb_power):
             self._logger.info('Deactivating USB hub power')
-            print('0x0', file=CurrentConfig.paths.usb_power)
+            with open(CurrentConfig.paths.usb_power, 'w') as powerfile:
+                print('0x0', file=powerfile)
         time.sleep(5)

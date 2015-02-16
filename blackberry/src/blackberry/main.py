@@ -1,4 +1,4 @@
-import sys, logging, traceback, string
+import sys, logging, traceback
 
 def main():
     from blackberry.configuration.ConfigData import CurrentConfig
@@ -26,7 +26,7 @@ def main():
     logger.info(CurrentConfig.args)
     
     def exceptionHandler(exctype, value, tb):
-        logger.fatal(string.join(traceback.format_exception(exctype, value, tb)))
+        logger.fatal(''.join(traceback.format_exception(exctype, value, tb)))
         sys.__excepthook__(exctype, value, tb)
     sys.excepthook = exceptionHandler
     

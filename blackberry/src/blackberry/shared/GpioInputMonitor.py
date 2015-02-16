@@ -3,6 +3,7 @@ import os, logging
 if os.uname()[4][:3] == 'arm':
 	rpi = True
 	import RPi.GPIO as GPIO
+	GPIO.setmode(GPIO.BCM)
 else:
 	rpi = False
 	logging.warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
