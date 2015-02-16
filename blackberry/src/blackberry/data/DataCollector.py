@@ -13,7 +13,8 @@ class DataCollector(object):
         self._timer = Timer(CurrentConfig.data.capture_interval, self._timerCallback)
         self._storage = DataStorage()
         
-    def start(self):
+    def init(self):
+        self._collectors = []
         for name in CurrentConfig.data.enabled_collectors:
             self._logger.info('Configuring data collector "%s"', name)
             try:
@@ -21,7 +22,9 @@ class DataCollector(object):
                 self._collectors.append(collector)
             except Exception as e:
                 self._logger.error('Failed to initialize data collector "%s": %r', name, e)
-                            
+        
+    def start(self):
+        self.init()                            
         self._logger.info('Starting data collector timer')
         self._timer.start()
         

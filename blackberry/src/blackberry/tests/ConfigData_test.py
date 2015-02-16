@@ -8,7 +8,7 @@ import json
 from blackberry.configuration.ConfigData import ConfigData
 
 
-class ConfigurationTests(unittest.TestCase):
+class ConfigData_tests(unittest.TestCase):
 
     
     def setUp(self):

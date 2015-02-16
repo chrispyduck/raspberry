@@ -5,7 +5,7 @@ if os.uname()[4][:3] == 'arm':
 	import RPi.GPIO as GPIO
 else:
 	rpi = False
-	logging.getLogger('GPIO').warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
+	logging.warn('You do not appear to be running this on a Raspberry Pi. GPIO functionality has been disabled.')
 
 class GpioInputMonitor(object):
 	def __init__(self, name, channel, callback):

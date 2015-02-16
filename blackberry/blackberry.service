@@ -5,7 +5,7 @@ Requires=
 [Service]
 User=blackberry
 Type=forking
-ExecStart=...
+ExecStart=/usr/local/bin/blackberry -c /etc/blackberry/config.json -l /var/log/blackberry.log -p /run/blackberry.pid
 
 [Install]
 WantedBy=multi-user.target
