@@ -24,11 +24,9 @@ class PowerMonitor(object):
     def OnSignal(self, sig, frame):
         if sig == signal.SIGUSR1:
             self._logger.warn('Manually activating due to SIGUSR1')
-            self.vAccIndicator.value = 1
             self._activate()
         elif sig == signal.SIGUSR2:
             self._logger.warn('Manually deactivating due to SIGUSR2')
-            self.vAccIndicator.value = 0
             self._deactivate()
         
     def _vAcc_change(self, value):
@@ -39,18 +37,7 @@ class PowerMonitor(object):
         self._logger.info('vBatt power %s', 'on' if value else 'off')
     
     def _activate(self):
-        #if os.path.isfile(CurrentConfig.paths.usb_power):
-        #    self._logger.info('Activating USB hub power')
-        #    with open(CurrentConfig.paths.usb_power, 'w') as powerfile:
-        #        print('0x1', file=powerfile)
-        #time.sleep(5)
         self.startup.fire()
     
     def _deactivate(self):
         self.shutdown.fire()
-        #time.sleep(5)
-        #if os.path.isfile(CurrentConfig.paths.usb_power):
-        #    self._logger.info('Deactivating USB hub power')
-        #    with open(CurrentConfig.paths.usb_power, 'w') as powerfile:
-        #        print('0x0', file=powerfile)
-        #time.sleep(5)

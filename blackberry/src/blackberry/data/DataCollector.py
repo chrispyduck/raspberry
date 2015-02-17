@@ -1,11 +1,9 @@
 import logging
-from blackberry.components.DataCollectorComponent import DataCollectorComponent
 from blackberry.shared.Timer import Timer
 from blackberry.configuration.ConfigData import CurrentConfig
-from blackberry.data.DataStorage import DataStorage
-from blackberry.shared.Gpio import GpioSimpleOutput
 import blackberry.shared
 from blackberry.shared.EventHook import EventHook
+from blackberry.data.DataBackend import DataBackend
 
 class DataCollector(object):
     ""
@@ -13,12 +11,8 @@ class DataCollector(object):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._collectors = []
         self._timer = Timer(CurrentConfig.data.capture_interval, self._timerCallback)
-        self._storage = DataStorage()
-        self._collectEvent = EventHook()
-        
-    @property
-    def CollectEvent(self):
-        return self._collectEvent
+        self._storage = DataBackend.GetConfiguredBackend() 
+        self.CollectEvent = EventHook()
         
     def init(self):
         self._collectors = []
@@ -42,7 +36,7 @@ class DataCollector(object):
         
     def queryProviders(self):
         "Evaluates each data provider function and stores the result"
-        self._collectEvent.fire()
+        self.CollectEvent.fire()
         result = []
         
         for collector in self._collectors:

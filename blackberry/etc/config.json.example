@@ -11,6 +11,7 @@
     "enabled_collectors": [
       "blackberry.components.TestDataCollector.TestDataCollector"
     ],
+    "storage_backend": "blackberry.data.MongoBackend.MongoBackend",
     "local_db": {
       "collection": "data",
       "db": "mongodb://blackberry:blackberry@localhost/blackberry"

@@ -7,7 +7,7 @@ from blackberry.components.Obd import Obd
 from blackberry.data.DataCollector import DataCollector
 from blackberry.components.Bluetooth import Bluetooth
 import multiprocessing
-from blackberry.data.DataStorage import DataStorage
+from blackberry.data.DataBackend import DataBackend
 from blackberry.shared.Gpio import GpioSimpleOutput
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \
@@ -28,8 +28,8 @@ class Controller(Daemon):
         self.CollectDataIndicator.value = not self.CollectDataIndicator.value 
         
     def run(self):
-        self._logger.debug('Testing local MongoDB connectivity')
-        dbTest = DataStorage(CurrentConfig.data.local_db)
+        self._logger.debug('Testing local data connectivity')
+        dbTest = DataBackend.GetConfiguredBackend()
         if not dbTest.isActive:
             self._logger.fatal('Unable to open communication with local MongoDB instance')
             return

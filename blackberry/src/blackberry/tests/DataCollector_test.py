@@ -8,6 +8,7 @@ from blackberry.data.DataCollector import DataCollector
 from blackberry.data.DataSeries import DataSeries
 from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.components.DataCollectorComponent import DataCollectorComponent
+import blackberry.shared 
 
 class Expected1(DataCollectorComponent):
     def GetData(self):
@@ -35,6 +36,10 @@ class Null(DataCollectorComponent):
         return None
             
 class DataCollector_test(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super(DataCollector_test, self).__init__(*args, **kwargs)
+        CurrentConfig.data.storage_backend = 'blackberry.data.TestBackend.TestBackend'
+        
     def test_expectedBehavior(self):
         CurrentConfig.data.enabled_collectors = [
             "blackberry.tests.DataCollector_test.Expected1"
@@ -89,6 +94,16 @@ class DataCollector_test(unittest.TestCase):
         result = collector.queryProviders()
         self.assertEqual(len(result), 1)
         self.assertEqual(len(collector._collectors), 2)
+        
+    def test_timerCallback(self):
+        CurrentConfig.data.enabled_collectors = [
+            "blackberry.components.TestDataCollector.TestDataCollector"
+        ]
+        collector = DataCollector()
+        collector.init()
+        data = collector.queryProviders()
+        datadict = blackberry.shared.todict(data)
+        print(datadict)
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'ConfigurationTests.loadConfig']

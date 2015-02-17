@@ -55,7 +55,7 @@ class Bluetooth(object):
                 self._logger.info('Found adapter: %s', path)
                 self._adapters[path] = interfaces
             elif 'org.bluez.Device1' in interfaces:
-                self._logger.info('Found device: %s', path)
+                self._logDevice(interfaces['org.bluez.Device1'])
                 self._devices[path] = interfaces
                 
     def _getInterfaces(self, d):
@@ -65,30 +65,20 @@ class Bluetooth(object):
         return interfaces
         
     def _interfacesAdded(self, path, interfaces):
-        self._logger.debug("Interfaces added at %s", path, "\n\t".join(self._getInterfaces(interfaces)))
+        self._logger.debug("Interfaces added at %s\n\%s", path, "\n\t".join(self._getInterfaces(interfaces)))
 
         if 'org.bluez.Device1' in interfaces:
             collection = self._devices
             properties = interfaces['org.bluez.Device1']
-            iftype = 'device'
+            if path in collection:
+                collection[path] = dict(collection[path].items() + properties.items())
+            else:
+                collection[path] = properties
+            self._logDevice(collection[path])
+            
         elif 'org.bluez.Adapter1' in interfaces:
             collection = self._adapters
             properties = interfaces['org.bluez.Adapter1']
-            iftype = 'adapter'
-        else:
-            return
-        
-        if path in collection:
-            collection[path] = dict(collection[path].items() + properties.items())
-        else:
-            collection[path] = properties
-
-        if iftype == 'device':
-            if "Address" in collection[path]:
-                address = properties["Address"]
-            else:
-                address = "<unknown>"
-            self._logDevice(address, collection[path])
         
     def _interfacesRemoved(self, path, interfaces):
         if 'org.bluez.Device1' in interfaces:
@@ -98,7 +88,7 @@ class Bluetooth(object):
             self._logger.warn('Adapter %s removed', path)
             self._adapters.pop(path)
         else:
-            self._logger.warn("Interface removed at %s: %r", path, "\n\t".join(self._getInterfaces(interfaces)))
+            self._logger.warn("Interface removed at %s: \n\t%s", path, "\n\t".join(self._getInterfaces(interfaces)))
         
     def _propertiesChanged(self, interface, changed, invalidated, path):
         if interface != "org.bluez.Device1":
@@ -108,33 +98,20 @@ class Bluetooth(object):
             self.devices[path] = dict(self.devices[path].items() + changed.items())
         else:
             self.devices[path] = changed
-            
-        if "Address" in self.devices[path]:
-            address = self.devices[path]["Address"]
-        else:
-            address = "<unknown>"
     
-        self._logDevice(address, self.devices[path])
+        self._logDevice(self.devices[path])
         
     def _adapterPropertyChanged(self, name, value):
         self._logger.debug("Adapter property '%s' changed to '%s'", name, value)
     
-    def _logDevice(self, address, properties):
-        #if 'Logged' in properties:
-        #    return
-        msgs = []
-        for key in properties.keys():
-            value = properties[key]
-            if (key == "Class"):
-                msgs.append("%s = 0x%06x" % (key, value))
-            elif key == "UUIDs":
-                pass
-            else:
-                msgs.append("%s = %s" % (key, value))
-    
-        self._logger.debug("Device %s:%s", address, "\n\t".join(msgs))
-        properties["Logged"] = True
-        
+    def _logDevice(self, properties, isUpdate=False):
+        self._logger.info('%s device %s: %s (%s, %s)',
+                          'Found' if not isUpdate else 'Updated',
+                          properties['Address'],
+                          properties['Name'],
+                          'Paired' if properties['Paired'] == 1 else 'Not paired',
+                          'Connected' if properties['Connected'] == 1 else 'Not connected')
+
     def connectDevices(self, activateTethering=True):
         connected = []
         tetheringDevice = None
