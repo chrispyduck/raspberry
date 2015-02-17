@@ -26,7 +26,7 @@ class _GpioBaseObject(object):
 	
 class GpioInputMonitor(_GpioBaseObject):
 	def __init__(self, name, channel, callback):
-		super(_GpioBaseObject, self).__init__(name, channel)
+		super(GpioInputMonitor, self).__init__(name, channel)
 		self._callback = callback
 		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -62,7 +62,7 @@ class GpioInputMonitor(_GpioBaseObject):
 
 class GpioSimpleOutput(_GpioBaseObject):
 	def __init__(self, name, channel, value=0):
-		super(_GpioBaseObject, self).__init__(name, channel)
+		super(GpioSimpleOutput, self).__init__(name, channel)
 		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.OUT)
 		self.value = value
