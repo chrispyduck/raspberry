@@ -28,7 +28,7 @@ class GpioInputMonitor(_GpioBaseObject):
 	def __init__(self, name, channel, callback):
 		super(_GpioBaseObject, self).__init__(name, channel)
 		self._callback = callback
-		if rpi:
+		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 			self._last_value = GPIO.input(self._channel)
 			GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=250)
@@ -39,7 +39,7 @@ class GpioInputMonitor(_GpioBaseObject):
 	@property
 	def value(self):
 		"""Gets the current value of the input pin"""
-		if rpi:
+		if rpi and self._channel > 0:
 			return GPIO.input(self._channel)
 		else:
 			return False
@@ -48,7 +48,7 @@ class GpioInputMonitor(_GpioBaseObject):
 		if channel != self._channel:
 			pass
 
-		if rpi:		
+		if rpi and self._channel > 0:		
 			value = GPIO.input(self._channel)
 		else:
 			value = False
@@ -63,21 +63,21 @@ class GpioInputMonitor(_GpioBaseObject):
 class GpioSimpleOutput(_GpioBaseObject):
 	def __init__(self, name, channel, value=0):
 		super(_GpioBaseObject, self).__init__(name, channel)
-		if rpi:
+		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.OUT)
 		self.value = value
 		self._logger.debug('Registering GPIO pin %d as output for "%s"; value=%r', self._channel, self._name, self._last_value)
 		
 	@property
 	def value(self):
-		if rpi:
+		if rpi and self._channel > 0:
 			return GPIO.input(self._channel)
 		else:
 			return self._value
 		
 	@value.setter
 	def value(self, val):
-		if rpi:
+		if rpi and self._channel > 0:
 			GPIO.output(self._channel, val)
 		else:
 			self._value = val
