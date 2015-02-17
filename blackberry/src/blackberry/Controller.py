@@ -1,4 +1,4 @@
-import signal, logging
+import signal, logging, multiprocessing
 import blackberry.shared
 from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.shared.Daemon import Daemon
@@ -6,9 +6,8 @@ from blackberry.components.PowerMonitor import PowerMonitor
 from blackberry.components.Obd import Obd
 from blackberry.data.DataCollector import DataCollector
 from blackberry.components.Bluetooth import Bluetooth
-import multiprocessing
 from blackberry.data.DataBackend import DataBackend
-from blackberry.shared.Gpio import GpioSimpleOutput
+from blackberry.shared.Gpio import GpioSimpleOutput, GpioInputMonitor
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \
     for n in dir(signal) if n.startswith('SIG') and '_' not in n )
@@ -20,16 +19,11 @@ class Controller(Daemon):
         self._logger.info('Starting daemon controller')
         self._lock = multiprocessing.Event()
         self._powerStatus = False
+        self.vAcc = GpioInputMonitor("vAcc", CurrentConfig.gpio.vAcc, self._vAcc_change)
+        self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self._vBatt_change)
         self.CollectDataIndicator = GpioSimpleOutput("Collect Data Indicator", CurrentConfig.gpio.CollectDataIndicator, 0)
         self.vAccIndicator = GpioSimpleOutput("vAcc Indicator", CurrentConfig.gpio.vAccIndicator, 0)
-        pass        
-        
-    def OnBeforeCollection(self):
-        self.CollectDataIndicator.value = 1
-        
-    def OnAfterCollection(self):
-        self.CollectDataIndicator.value = 0
-        
+
     def run(self):
         self._logger.debug('Testing local data connectivity')
         dbTest = DataBackend.GetConfiguredBackend()
@@ -37,20 +31,25 @@ class Controller(Daemon):
             self._logger.fatal('Unable to open communication with local MongoDB instance')
             return
         dbTest = None
-        
-        self._logger.debug('Initializing PowerMonitor')
-        self.power = PowerMonitor()
-        self.power.startup += self.powerOn
-        self.power.shutdown += self.powerOff
-        self._powerStatus = self.power.vAcc.value
 
         self._logger.debug('Initializing DataCollector')
         self.dataCollector = DataCollector()
         
         self._logger.debug('Starting main loop')
+        lastvAcc = self.vAcc.value
         while not self._lock.is_set():
-            if self._powerStatus:
+            vAccValue = self.vAcc.value
+            if vAccValue != lastvAcc:
+                if vAccValue:
+                    self.powerOn()
+                else:
+                    self.powerOff()
+                lastvAcc = vAccValue
+            
+            if vAccValue:
+                self.CollectDataIndicator.value = 1
                 self.dataCollector.collect()
+                self.CollectDataIndicator.value = 0
                 self._lock.wait(CurrentConfig.data.capture_interval)
             else:
                 # no power - flash LEDs

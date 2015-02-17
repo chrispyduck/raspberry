@@ -9,8 +9,7 @@ class PowerMonitor(object):
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.debug('PowerMonitor(): initializing')
-        self.vAcc = GpioInputMonitor("vAcc", CurrentConfig.gpio.vAcc, self._vAcc_change)
-        self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self._vBatt_change)
+        
         self.startup = EventHook()
         self.shutdown = EventHook()
         self._vBatt_change(self.vBatt.value)
