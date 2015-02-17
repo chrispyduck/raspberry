@@ -33,3 +33,9 @@ The following assumes that you are running Arch linux for the Raspberry Pi
           missingok
           create 0644 blackberry blackberry
         }
+
+##Notes
+
+The LEDs behave as follows:
+* When vAcc is off, both the vAcc indicator and the data collection indicator will toggle every 5 seconds (configurable)
+* When vAcc is on, the vAcc indicator is solid and the data collection indicator will toggle on every data collection operation (every 0.3 seconds, configurable)

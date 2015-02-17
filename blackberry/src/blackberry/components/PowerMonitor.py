@@ -11,7 +11,6 @@ class PowerMonitor(object):
         self._logger.debug('PowerMonitor(): initializing')
         self.vAcc = GpioInputMonitor("vAcc", CurrentConfig.gpio.vAcc, self._vAcc_change)
         self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self._vBatt_change)
-        self.vAccIndicator = GpioSimpleOutput("vAcc Indicator", CurrentConfig.gpio.vAccIndicator, 0)
         self.startup = EventHook()
         self.shutdown = EventHook()
         self._vBatt_change(self.vBatt.value)
@@ -35,7 +34,6 @@ class PowerMonitor(object):
     def _vAcc_change(self, value):
         self._logger.info('vAcc power %s', 'on' if value else 'off')
         self._activate() if value else self._deactivate()
-        self.vAccIndicator.value = 1 if value else 0
     
     def _vBatt_change(self, value):
         self._logger.info('vBatt power %s', 'on' if value else 'off')

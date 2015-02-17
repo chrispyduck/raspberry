@@ -5,6 +5,7 @@ from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.data.DataStorage import DataStorage
 from blackberry.shared.Gpio import GpioSimpleOutput
 import blackberry.shared
+from blackberry.shared.EventHook import EventHook
 
 class DataCollector(object):
     ""
@@ -13,7 +14,11 @@ class DataCollector(object):
         self._collectors = []
         self._timer = Timer(CurrentConfig.data.capture_interval, self._timerCallback)
         self._storage = DataStorage()
-        self.CollectorIndicator = GpioSimpleOutput("Collector Indicator", CurrentConfig.gpio.CollectorIndicator, 0)
+        self._collectEvent = EventHook()
+        
+    @property
+    def CollectEvent(self):
+        return self._collectEvent
         
     def init(self):
         self._collectors = []
@@ -37,7 +42,7 @@ class DataCollector(object):
         
     def queryProviders(self):
         "Evaluates each data provider function and stores the result"
-        self.CollectorIndicator.value = 1
+        self._collectEvent.fire()
         result = []
         
         for collector in self._collectors:
@@ -48,7 +53,6 @@ class DataCollector(object):
                 if len(series.points) > 0:
                     result.append(series)
                 
-        self.CollectorIndicator.value = 0
         return result
     
     def _timerCallback(self):

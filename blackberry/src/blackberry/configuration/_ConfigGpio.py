@@ -11,3 +11,4 @@ class _ConfigGpio(_ConfigType):
         self.vBatt = 13
         self.vAccIndicator = 12
         self.CollectDataIndicator = 16
+        self.PowerOffToggleDelay = 5
