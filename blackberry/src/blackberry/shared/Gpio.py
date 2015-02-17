@@ -66,7 +66,7 @@ class GpioSimpleOutput(_GpioBaseObject):
 		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.OUT)
 		self.value = value
-		self._logger.debug('Registering GPIO pin %d as output for "%s"; value=%r', self._channel, self._name, self._last_value)
+		self._logger.debug('Registering GPIO pin %d as output for "%s"; value=%r', self._channel, self._name, value)
 		
 	@property
 	def value(self):
