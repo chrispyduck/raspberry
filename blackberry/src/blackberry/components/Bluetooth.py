@@ -57,9 +57,15 @@ class Bluetooth(object):
             elif 'org.bluez.Device1' in interfaces:
                 self._logger.info('Found device: %s', path)
                 self._devices[path] = interfaces
+                
+    def _getInterfaces(self, d):
+        interfaces = []
+        for k in d:
+            interfaces.append(k)
+        return interfaces
         
     def _interfacesAdded(self, path, interfaces):
-        self._logger.debug("Interfaces added at %s: %r", path, interfaces)
+        self._logger.debug("Interfaces added at %s", path, "\n\t".join(self._getInterfaces(interfaces)))
 
         if 'org.bluez.Device1' in interfaces:
             collection = self._devices
@@ -91,7 +97,8 @@ class Bluetooth(object):
         elif 'org.bluez.Adapter1' in interfaces:
             self._logger.warn('Adapter %s removed', path)
             self._adapters.pop(path)
-        self._logger.warn("Interface removed at %s: %r", path, interfaces)
+        else:
+            self._logger.warn("Interface removed at %s: %r", path, "\n\t".join(self._getInterfaces(interfaces)))
         
     def _propertiesChanged(self, interface, changed, invalidated, path):
         if interface != "org.bluez.Device1":
@@ -115,15 +122,17 @@ class Bluetooth(object):
     def _logDevice(self, address, properties):
         #if 'Logged' in properties:
         #    return
-        self._logger.debug("Device " + address + " :")
-
+        msgs = []
         for key in properties.keys():
             value = properties[key]
             if (key == "Class"):
-                self._logger.debug("    %s = 0x%06x" % (key, value))
+                msgs.append("%s = 0x%06x" % (key, value))
+            elif key == "UUIDs":
+                pass
             else:
-                logging.debug("    %s = %s" % (key, value))
+                msgs.append("%s = %s" % (key, value))
     
+        self._logger.debug("Device %s:%s", address, "\n\t".join(msgs))
         properties["Logged"] = True
         
     def connectDevices(self, activateTethering=True):
