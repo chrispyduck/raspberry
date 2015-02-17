@@ -42,17 +42,23 @@ class Controller(Daemon):
         self.power = PowerMonitor()
         self.power.startup += self.powerOn
         self.power.shutdown += self.powerOff
+
+        self._logger.debug('Initializing DataCollector')
+        self.dataCollector = DataCollector()
         
-        self._logger.debug('lock wait started')
+        self._logger.debug('Starting main loop')
         while not self._lock.is_set():
-            self._lock.wait(CurrentConfig.gpio.PowerOffToggleDelay)
-            if not self._powerStatus:
+            if self._powerStatus:
+                self.dataCollector.collect()
+                self._lock.wait(CurrentConfig.data.capture_interval)
+            else:
                 # no power - flash LEDs
                 self.CollectDataIndicator.value = 1
                 self.vAccIndicator.value = 1
                 self._lock.wait(0.03)
                 self.CollectDataIndicator.value = 0
                 self.vAccIndicator.value = 0
+                self._lock.wait(CurrentConfig.gpio.PowerOffToggleDelay)
                 
         self._logger.debug('lock wait finished')
         
@@ -64,12 +70,8 @@ class Controller(Daemon):
         
         self.vAccIndicator.value = 1
         
+        self.dataCollector.init()
         self._powerStatus = True
-        
-        self.dataCollector = DataCollector()
-        self.dataCollector.BeforeCollect += self.OnBeforeCollection()
-        self.dataCollector.AfterCollect += self.OnAfterCollection()
-        self.dataCollector.start()
         
         try:
             self.bluetooth = Bluetooth()
@@ -84,9 +86,7 @@ class Controller(Daemon):
             return
         
         self._powerStatus = False
-        if hasattr(self, 'dataCollector'):
-            self.dataCollector.stop()
-            self.dataCollector = None
+        
         if hasattr(self, 'bluetooth'):
             self.bluetooth = None
         

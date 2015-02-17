@@ -8,7 +8,7 @@ from blackberry.configuration.ConfigData import CurrentConfig
 class Bluetooth(object):
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._logger.debug('bluetooth_manager(): initializing')
+        self._logger.debug('Bluetooth manager initializing')
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
         self._sysbus = dbus.SystemBus()
         self._devices = {}
@@ -42,7 +42,7 @@ class Bluetooth(object):
             adapter = dbus.Interface(self._sysbus.get_object('org.bluez', path), 'org.bluez.Adapter1')
             adapter.StartDiscovery()
         
-        self._logger.debug('bluetooth_manager(): initialization complete')
+        self._logger.debug('Bluetooth manager initialized')
         
     def refreshData(self):
         bluez_root = self._sysbus.get_object('org.bluez', '/')
@@ -65,7 +65,7 @@ class Bluetooth(object):
         return interfaces
         
     def _interfacesAdded(self, path, interfaces):
-        self._logger.debug("Interfaces added at %s\n\%s", path, "\n\t".join(self._getInterfaces(interfaces)))
+        #self._logger.debug("Interfaces added at %s\n\%s", path, "\n\t".join(self._getInterfaces(interfaces)))
 
         if 'org.bluez.Device1' in interfaces:
             collection = self._devices
@@ -87,8 +87,8 @@ class Bluetooth(object):
         elif 'org.bluez.Adapter1' in interfaces:
             self._logger.warn('Adapter %s removed', path)
             self._adapters.pop(path)
-        else:
-            self._logger.warn("Interface removed at %s: \n\t%s", path, "\n\t".join(self._getInterfaces(interfaces)))
+        #else:
+        #    self._logger.warn("Interface removed at %s: \n\t%s", path, "\n\t".join(self._getInterfaces(interfaces)))
         
     def _propertiesChanged(self, interface, changed, invalidated, path):
         if interface != "org.bluez.Device1":
