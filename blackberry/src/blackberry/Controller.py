@@ -24,8 +24,11 @@ class Controller(Daemon):
         self.vAccIndicator = GpioSimpleOutput("vAcc Indicator", CurrentConfig.gpio.vAccIndicator, 0)
         pass        
         
-    def OnDataCollection(self):
-        self.CollectDataIndicator.value = not self.CollectDataIndicator.value 
+    def OnBeforeCollection(self):
+        self.CollectDataIndicator.value = 1
+        
+    def OnAfterCollection(self):
+        self.CollectDataIndicator.value = 0
         
     def run(self):
         self._logger.debug('Testing local data connectivity')
@@ -44,9 +47,12 @@ class Controller(Daemon):
         while not self._lock.is_set():
             self._lock.wait(CurrentConfig.gpio.PowerOffToggleDelay)
             if not self._powerStatus:
-                # no power - toggle LEDs
-                self.CollectDataIndicator.value = not self.CollectDataIndicator.value
-                self.vAccIndicator.value = not self.vAccIndicator.value
+                # no power - flash LEDs
+                self.CollectDataIndicator.value = 1
+                self.vAccIndicator.value = 1
+                self._lock.wait(0.03)
+                self.CollectDataIndicator.value = 0
+                self.vAccIndicator.value = 0
                 
         self._logger.debug('lock wait finished')
         
@@ -59,16 +65,18 @@ class Controller(Daemon):
         self.vAccIndicator.value = 1
         
         self._powerStatus = True
+        
         self.dataCollector = DataCollector()
-        self.dataCollector.CollectEvent += self.OnDataCollection
+        self.dataCollector.BeforeCollect += self.OnBeforeCollection()
+        self.dataCollector.AfterCollect += self.OnAfterCollection()
+        self.dataCollector.start()
+        
         try:
             self.bluetooth = Bluetooth()
             self.bluetooth.connected += self.onNetConnected
             self.bluetooth.disconnected += self.onNetDisconnected
         except Exception as e:
-            self._logger.error('Error initializing Bluetooth: %r', e)
-        
-        self.dataCollector.start()
+            self._logger.error('Error initializing Bluetooth: %r', e)        
     
     def powerOff(self):
         if not self._powerStatus:

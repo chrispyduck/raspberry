@@ -30,8 +30,12 @@ class PowerMonitor(object):
             self._deactivate()
         
     def _vAcc_change(self, value):
-        self._logger.info('vAcc power %s', 'on' if value else 'off')
-        self._activate() if value else self._deactivate()
+        if value:
+            self._logger.info('vAcc power on')
+            self._activate()
+        else:
+            self._logger.info('vAcc power off')
+            self._deactivate()
     
     def _vBatt_change(self, value):
         self._logger.info('vBatt power %s', 'on' if value else 'off')

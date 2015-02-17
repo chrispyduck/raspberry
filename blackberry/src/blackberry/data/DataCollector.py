@@ -12,7 +12,8 @@ class DataCollector(object):
         self._collectors = []
         self._timer = Timer(CurrentConfig.data.capture_interval, self._timerCallback)
         self._storage = DataBackend.GetConfiguredBackend() 
-        self.CollectEvent = EventHook()
+        self.BeforeCollect = EventHook()
+        self.AfterCollect = EventHook()
         
     def init(self):
         self._collectors = []
@@ -26,7 +27,7 @@ class DataCollector(object):
         
     def start(self):
         self.init()                            
-        self._logger.info('Starting data collector timer')
+        self._logger.info('Starting data collector timer with interval = %r', CurrentConfig.data.capture_interval)
         self._timer.start()
         
     def stop(self):
@@ -36,7 +37,7 @@ class DataCollector(object):
         
     def queryProviders(self):
         "Evaluates each data provider function and stores the result"
-        self.CollectEvent.fire()
+        self.BeforeCollect.fire()
         result = []
         
         for collector in self._collectors:
@@ -46,7 +47,8 @@ class DataCollector(object):
                 self._logger.debug('Data provider %s returned %d points', collector.__class__.__name__, len(series.points))
                 if len(series.points) > 0:
                     result.append(series)
-                
+        
+        self.AfterCollect.fire()        
         return result
     
     def _timerCallback(self):
