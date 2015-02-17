@@ -10,4 +10,13 @@ class DataSeries(object):
         self.points.append(DataPoint(counter, value))
         
     def serialize(self):
-        return self.__dict__
+        p = []
+        for point in self.points:
+            p.append(point.__dict__)
+        
+        d = {
+             "source": self.source,
+             "points": p
+             }
+                
+        return d

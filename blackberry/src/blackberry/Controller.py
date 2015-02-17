@@ -42,6 +42,7 @@ class Controller(Daemon):
         self.power = PowerMonitor()
         self.power.startup += self.powerOn
         self.power.shutdown += self.powerOff
+        self._powerStatus = self.power.vAcc.value
 
         self._logger.debug('Initializing DataCollector')
         self.dataCollector = DataCollector()
@@ -60,7 +61,7 @@ class Controller(Daemon):
                 self.vAccIndicator.value = 0
                 self._lock.wait(CurrentConfig.gpio.PowerOffToggleDelay)
                 
-        self._logger.debug('lock wait finished')
+        self._logger.debug('Exited main loop')
         
     def powerOn(self):
         "start all counters and attempt to gain internet access using bluetooth"

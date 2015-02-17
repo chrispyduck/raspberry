@@ -6,5 +6,5 @@ class TestBackend(DataBackend):
         super(TestBackend, self).__init__(configuration)
         
         
-    def commit(self, data):
-        self.collectedData.append(data)
+    def commit(self, dataSeries):
+        self.collectedData.append(dataSeries)

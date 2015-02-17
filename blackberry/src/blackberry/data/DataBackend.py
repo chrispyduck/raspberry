@@ -5,7 +5,7 @@ class DataBackend(object):
     def __init__(self, configuration=CurrentConfig.data.local_db):
         self._configuration = configuration
         
-    def commit(self, data):
+    def commit(self, dataSeries):
         raise Exception("Not implemented")
     
     @property

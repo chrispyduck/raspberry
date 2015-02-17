@@ -37,6 +37,5 @@ class DataCollector(object):
         return result
     
     def collect(self):
-        data = self.queryProviders()
-        datadict = blackberry.shared.todict(data)
-        self._storage.commit(datadict)
+        for dataSeries in self.queryProviders():
+            self._storage.commit(dataSeries)
