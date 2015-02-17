@@ -22,9 +22,8 @@
   },
   "gpio": {
     "vAcc": 19,
-    "vBatt": 13
-  },
-  "paths": {
-    "usb_power": "/sys/devices/platform/bcm2708_usb/buspower"
+    "vBatt": 13,
+    "vAccIndicator": 12,
+    "CollectDataIndicator": 16
   }
 }

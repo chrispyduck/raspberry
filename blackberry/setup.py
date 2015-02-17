@@ -11,7 +11,7 @@ setuptools.setup(
     url='https://github.com/chrispyduck/raspberry',
     packages=['blackberry', 'blackberry.components', 'blackberry.configuration', 'blackberry.data', 'blackberry.shared', 'blackberry.tests'],
     package_dir={'blackberry': 'src/blackberry'},
-    requires=['RPi.GPIO', 'pymongo', 'json', 'argparse', 'dbus', 'obd'],
+    requires=['RPi.GPIO', 'pymongo', 'json', 'argparse', 'dbus', 'obd', 'psutil'],
     entry_points={
         'console_scripts': [
             'blackberry = blackberry.main:main'

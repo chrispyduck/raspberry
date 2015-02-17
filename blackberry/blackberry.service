@@ -3,9 +3,9 @@ Description=blackberry - OBD based vehicle black box
 Requires=
 
 [Service]
-User=blackberry
+User=root
 Type=forking
-ExecStart=/usr/local/bin/blackberry -c /etc/blackberry/config.json -l /var/log/blackberry.log -p /run/blackberry.pid
+ExecStart=/usr/bin/blackberry -c /etc/blackberry/config.json -l /var/log/blackberry.log -p /run/blackberry.pid
 
 [Install]
 WantedBy=multi-user.target

@@ -1,5 +1,4 @@
 from __future__ import print_function
-from blackberry.configuration._ConfigPaths import _ConfigPaths
 from blackberry.configuration._ConfigGpio import _ConfigGpio
 from blackberry.configuration._ConfigBluetooth import _ConfigBluetooth
 from blackberry.configuration._ConfigData import _ConfigData
@@ -11,7 +10,6 @@ class ConfigData(object):
     def __init__(self): 
         self._logger = logging.getLogger(self.__class__.__name__)
         self.gpio = _ConfigGpio()
-        self.paths = _ConfigPaths()
         self.bluetooth = _ConfigBluetooth()
         self.data = _ConfigData()
         

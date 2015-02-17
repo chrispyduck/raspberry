@@ -9,3 +9,5 @@ class _ConfigGpio(_ConfigType):
         super(_ConfigType, self).__init__()
         self.vAcc = 19
         self.vBatt = 13
+        self.vAccIndicator = 12
+        self.CollectDataIndicator = 16
