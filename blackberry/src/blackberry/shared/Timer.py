@@ -1,5 +1,5 @@
 from threading import Thread
-from multiprocessing.synchronize import Event
+from multiprocessing import Event
 
 class Timer(object):
     def __init__(self, interval, callback):

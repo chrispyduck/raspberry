@@ -31,7 +31,7 @@ class GpioInputMonitor(_GpioBaseObject):
 		if rpi and self._channel > 0:
 			GPIO.setup(self._channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 			self._last_value = GPIO.input(self._channel)
-			GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=250)
+			GPIO.add_event_detect(self._channel, GPIO.BOTH, callback=self._change, bouncetime=1000)
 		else:
 			self._last_value = False
 		self._logger.debug('Registering GPIO pin %d as input for "%s"; value=%r', self._channel, self._name, self._last_value)

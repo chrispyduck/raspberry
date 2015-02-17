@@ -7,6 +7,7 @@ from blackberry.components.Obd import Obd
 from blackberry.data.DataCollector import DataCollector
 from blackberry.components.Bluetooth import Bluetooth
 import multiprocessing
+from blackberry.data.DataStorage import DataStorage
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \
     for n in dir(signal) if n.startswith('SIG') and '_' not in n )
@@ -21,6 +22,13 @@ class Controller(Daemon):
         pass        
         
     def run(self):
+        self._logger.debug('Testing local MongoDB connectivity')
+        dbTest = DataStorage(CurrentConfig.data.local_db)
+        if not dbTest.isActive():
+            self._logger.fatal('Unable to open communication with local MongoDB instance')
+            return
+        dbTest = None
+        
         self._logger.debug('Initializing PowerMonitor')
         self.power = PowerMonitor()
         self.power.startup += self.powerOn
@@ -33,6 +41,10 @@ class Controller(Daemon):
         
     def powerOn(self):
         "start all counters and attempt to gain internet access using bluetooth"
+        if self._powerStatus:
+            self._logger.warn('Received powerOff event while power was on. Ignoring.')
+            return
+        
         self._powerStatus = True
         self.dataCollector = DataCollector()
 
@@ -46,11 +58,16 @@ class Controller(Daemon):
         self.dataCollector.start()
     
     def powerOff(self):
+        if not self._powerStatus:
+            self._logger.warn('Received powerOff event while power was off. Ignoring.')
+            return
+        
         self._powerStatus = False
-        self.dataCollector.stop()
-        self.dataCollector = None
-        self.collectors = None
-        self.bluetooth = None
+        if hasattr(self, 'dataCollector'):
+            self.dataCollector.stop()
+            self.dataCollector = None
+        if hasattr(self, 'bluetooth'):
+            self.bluetooth = None
         pass
         
     def onNetConnected(self):

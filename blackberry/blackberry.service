@@ -1,6 +1,6 @@
 [Unit]
 Description=blackberry - OBD based vehicle black box
-Requires=
+Requires=mongodb.service
 
 [Service]
 User=root
