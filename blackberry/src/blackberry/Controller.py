@@ -19,19 +19,15 @@ class Controller(Daemon):
         self._logger.info('Starting daemon controller')
         self._lock = multiprocessing.Event()
         self._powerStatus = False
-        self.vAcc = GpioInputMonitor("vAcc", CurrentConfig.gpio.vAcc, self._vAcc_change)
-        self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self._vBatt_change)
+        self.vAcc = GpioInputMonitor("vAcc", CurrentConfig.gpio.vAcc, self.noop())
+        self.vBatt = GpioInputMonitor("vBatt", CurrentConfig.gpio.vBatt, self.noop())
         self.CollectDataIndicator = GpioSimpleOutput("Collect Data Indicator", CurrentConfig.gpio.CollectDataIndicator, 0)
         self.vAccIndicator = GpioSimpleOutput("vAcc Indicator", CurrentConfig.gpio.vAccIndicator, 0)
 
-    def run(self):
-        self._logger.debug('Testing local data connectivity')
-        dbTest = DataBackend.GetConfiguredBackend()
-        if not dbTest.isActive:
-            self._logger.fatal('Unable to open communication with local MongoDB instance')
-            return
-        dbTest = None
+    def noop(self, unused):
+        pass
 
+    def run(self):
         self._logger.debug('Initializing DataCollector')
         self.dataCollector = DataCollector()
         

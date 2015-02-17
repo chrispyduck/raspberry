@@ -27,10 +27,10 @@ class DataCollector(object):
         result = []
         
         for collector in self._collectors:
-            self._logger.debug('Querying data collector: %s', collector.__class__.__name__)
+            #self._logger.debug('Querying data collector: %s', collector.__class__.__name__)
             series = collector.GetData()
             if series != None:
-                self._logger.debug('Data provider %s returned %d points', collector.__class__.__name__, len(series.points))
+                #self._logger.debug('Data provider %s returned %d points', collector.__class__.__name__, len(series.points))
                 if len(series.points) > 0:
                     result.append(series)
 
