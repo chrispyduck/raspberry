@@ -8,4 +8,5 @@ class _ConfigData(_ConfigType):
         self.local_db = _ConfigDataType()
         self.capture_interval = 0.3
         self.enabled_collectors = ['TestDataCollector']
+        self.collector_configuration = {}
         self.storage_backend = 'blackberry.data.DataStorage'

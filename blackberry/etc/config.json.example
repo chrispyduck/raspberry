@@ -11,6 +11,29 @@
     "enabled_collectors": [
       "blackberry.components.TestDataCollector.TestDataCollector"
     ],
+    "collector_configuration": {
+      "Obd": {
+      	"sensors": [
+      		"RPM",
+            "COOLANT_TEMP",
+            "FUEL_STATUS",
+            "FUEL_PRESSURE",
+            "INTAKE_PRESSURE",
+            "INTAKE_TEMP",
+            "SPEED",
+            "INTAKE_TEMP",
+            "THROTTLE_POS",
+            "FUEL_LEVEL",
+            "BAROMETRIC_PRESSURE",
+            "EVAP_VAPOR_PRESSURE",
+            "AMBIANT_AIR_TEMP",
+            "OIL_TEMP",
+            "FUEL_RATE"
+      	],
+      	"baudrate": 38400,
+      	"port": "COM4"
+      }
+    },
     "storage_backend": "blackberry.data.MongoBackend.MongoBackend",
     "local_db": {
       "collection": "data",
