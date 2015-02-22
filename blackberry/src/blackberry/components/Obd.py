@@ -1,7 +1,6 @@
 from blackberry.components.DataCollectorComponent import DataCollectorComponent
-from blackberry.data.DataSeries import DataSeries
-import obd, logging
 from blackberry.configuration.ConfigData import CurrentConfig
+import obd, logging
 
 class Obd(DataCollectorComponent):
     def __init__(self):
@@ -25,8 +24,11 @@ class Obd(DataCollectorComponent):
         return self._connection
 
     def GetData(self):
-        series = DataSeries('obd')
         conn = self.connection
         for counter in self._counters:
-            series.add(counter, conn.query(counter))
-        return series
+            yield {
+                   "src": "obd",
+                   "mode": int('0x'+counter.mode, 0),
+                   "pid": int('0x'+counter.pid, 0),
+                   "value": conn.query(counter).value
+                   }

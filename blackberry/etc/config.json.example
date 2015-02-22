@@ -36,11 +36,11 @@
     },
     "storage_backend": "blackberry.data.MongoBackend.MongoBackend",
     "local_db": {
-      "collection": "data",
+      "collection": "trips",
       "db": "mongodb://blackberry:blackberry@localhost/blackberry"
     },
     "remote_db": {
-      "collection": "raspberry",
+      "collection": "trips",
       "db": "mongodb://user:pass@hostname:port/db"
     }
   },

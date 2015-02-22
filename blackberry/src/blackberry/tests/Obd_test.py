@@ -24,8 +24,8 @@ class Obd_test(unittest.TestCase):
         obdCollector = Obd()
         self.assertEqual(len(obdCollector._counters), len(CurrentConfig.data.collector_configuration['Obd']['sensors']), 'the list of sensors should have been loaded as provided')
         
-        series = obdCollector.GetData()
-        for item in series.points:
-            print("{0}: {1}".format(item.counter, item.value))
-        self.assertEqual(len(series.points), len(CurrentConfig.data.collector_configuration['Obd']['sensors']), 'Some data should have been collected')
+        points = list(obdCollector.GetData())
+        for point in points:
+            print(repr(point))
+        self.assertEqual(len(points), len(CurrentConfig.data.collector_configuration['Obd']['sensors']), 'Some data should have been collected')
         

@@ -1,8 +1,6 @@
 import logging
-from blackberry.shared.Timer import Timer
-from blackberry.configuration.ConfigData import CurrentConfig
 import blackberry.shared
-from blackberry.shared.EventHook import EventHook
+from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.data.DataBackend import DataBackend
 
 class DataCollector(object):
@@ -24,18 +22,13 @@ class DataCollector(object):
         
     def queryProviders(self):
         "Evaluates each data provider function and stores the result"
-        result = []
-        
         for collector in self._collectors:
-            #self._logger.debug('Querying data collector: %s', collector.__class__.__name__)
-            series = collector.GetData()
-            if series != None:
-                #self._logger.debug('Data provider %s returned %d points', collector.__class__.__name__, len(series.points))
-                if len(series.points) > 0:
-                    result.append(series)
-
-        return result
-    
+            points = collector.GetData()
+            if points:
+                for point in points:
+                    if point:
+                        yield point
+                    
     def collect(self):
-        for dataSeries in self.queryProviders():
-            self._storage.commit(dataSeries)
+        for point in self.queryProviders():
+            self._storage.commit(point)

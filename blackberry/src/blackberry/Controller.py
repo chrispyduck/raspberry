@@ -1,12 +1,8 @@
 import signal, logging, multiprocessing
-import blackberry.shared
 from blackberry.configuration.ConfigData import CurrentConfig
 from blackberry.shared.Daemon import Daemon
-from blackberry.components.PowerMonitor import PowerMonitor
-from blackberry.components.Obd import Obd
 from blackberry.data.DataCollector import DataCollector
 from blackberry.components.Bluetooth import Bluetooth
-from blackberry.data.DataBackend import DataBackend
 from blackberry.shared.Gpio import GpioSimpleOutput, GpioInputMonitor
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \

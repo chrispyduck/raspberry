@@ -39,3 +39,14 @@ The following assumes that you are running Arch linux for the Raspberry Pi
 The LEDs behave as follows:
 * When vAcc is off, both the vAcc indicator and the data collection indicator will flash every 5 seconds (configurable)
 * When vAcc is on, the vAcc indicator is solid and the data collection indicator will turn on during data collection
+
+##Schema
+```
+trip: {
+  _id: 'auto-generated ID',
+  data: [
+  	{ ts: 'timestamp', src: 'data source', value: 'data value', ...: ... },
+  	...
+  ]
+}
+```
